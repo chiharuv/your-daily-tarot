@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Daily Tarot</title>
+<meta name="description" content="One tarot card a day — pause, breathe, and draw.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+
+    <!-- Faint stars in the background. Purely decorative, so they're
+         hidden from screen readers with aria-hidden. -->
+    <img class="bg-star" style="left:9.375%;  top:13.237%" src="assets/bg-star-l.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:17.813%; top:31.528%" src="assets/bg-star-i.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:7.188%;  top:52.467%" src="assets/bg-star-h.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:13.438%; top:75.090%" src="assets/bg-star-k.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:23.438%; top:19.013%" src="assets/bg-star-j.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:20.469%; top:62.575%" src="assets/bg-star-i.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:30.000%; top:84.236%" src="assets/bg-star-h.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:90.000%; top:14.440%" src="assets/bg-star-g.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:81.875%; top:36.342%" src="assets/bg-star-b.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:93.125%; top:56.558%" src="assets/bg-star-f.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:85.938%; top:77.015%" src="assets/bg-star-d.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:76.563%; top:21.901%" src="assets/bg-star-c.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:72.031%; top:67.389%" src="assets/bg-star-b.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:79.688%; top:87.846%" src="assets/bg-star-e.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:33.125%; top:11.071%" src="assets/bg-star-d.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:67.188%; top:10.589%" src="assets/bg-star-c.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:37.969%; top:91.697%" src="assets/bg-star-b.svg" alt="" aria-hidden="true">
+    <img class="bg-star" style="left:65.781%; top:92.901%" src="assets/bg-star-a.svg" alt="" aria-hidden="true">
+
+    <header class="header">
+      <h1 class="title">YOUR DAILY TAROT</h1>
+      <p class="subtitle">One card, once a day — pause, breathe, and draw.</p>
+      <!-- Only appears when you come back the same day (frame 03) -->
+      <p class="today-note" id="todayNote" hidden>Your card for today</p>
+    </header>
+
+    <!-- The card is a button so it can be clicked AND reached by keyboard. -->
+    <button class="stage" id="stage" type="button" aria-label="Draw a card">
+      <div class="flipper" id="flipper">
+        <div class="card-side card-back-side">
+          <div class="card-back-art" id="cardBackArt"><!-- filled in by app.js --></div>
+        </div>
+        <div class="card-side card-face-side">
+          <div class="card-face-inner" id="cardFace"><!-- filled in by app.js --></div>
+        </div>
+      </div>
+    </button>
+
+    <!-- Before drawing (frame 01) -->
+    <p class="meaning" id="prompt">Take a breath and focus on your day.</p>
+
+    <!-- After drawing (frames 02 and 03).
+         aria-live means screen readers announce the card when it appears. -->
+    <div class="reading" id="reading" hidden aria-live="polite">
+      <h2 class="card-name" id="cardName"></h2>
+      <p class="keywords" id="keywords"></p>
+      <p class="meaning" id="meaning"></p>
+    </div>
+
+    <button class="draw-button" id="drawButton" type="button">Draw a card</button>
+
+  </main>
+
+  <!-- Order matters: the deck and the drawings must load before the
+       logic that uses them. Plain <script> tags (not modules) so the
+       page also works when you just double-click the file. -->
+  <script src="cards.js"></script>
+  <script src="symbols.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

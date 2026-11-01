@@ -1,0 +1,367 @@
+/* ============================================================
+   styles.css — all the looks for the Daily Tarot page
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. TOKENS
+   These are the same colours and sizes as the "Tarot Tokens"
+   variables in the Figma file. Change one here and it updates
+   everywhere on the page.
+   ------------------------------------------------------------ */
+:root {
+  --color-gold:         #e8c76f;
+  --color-gold-bright:  #f7ebbc;
+  --color-gold-deep:    #a8803a;
+  --color-bg-deep:      #140826;
+  --color-text-primary: #f4ede4;
+  --color-text-muted:   #c2aede;
+
+  --font-display: 'Cinzel', 'Times New Roman', serif;
+  --font-body:    'Cormorant Garamond', Georgia, serif;
+
+  /* The card's width. EVERYTHING on the card is measured from
+     this one number, so shrinking it on a phone keeps all the
+     proportions exactly right. 264px matches the Figma design. */
+  --card-w: 264px;
+  --card-h: calc(var(--card-w) * 429 / 264);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    #4a2b7a 0%, #382161 26%, #261649 52%, #140826 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ------------------------------------------------------------
+   2. PAGE LAYOUT
+   A single centred column, same as the auto-layout in Figma.
+   ------------------------------------------------------------ */
+.page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px 64px;
+  overflow: hidden;
+}
+
+/* faint stars scattered behind everything */
+.bg-star { position: absolute; pointer-events: none; }
+
+/* ------------------------------------------------------------
+   3. HEADER
+   ------------------------------------------------------------ */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  max-width: 100%;
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 42px;
+  line-height: 1.2;
+  letter-spacing: 8px;
+  text-indent: 8px;          /* nudges it back to true centre */
+  color: var(--color-gold-bright);
+}
+.subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+/* "Your card for today" — only shown on a repeat visit */
+.today-note {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-indent: 3px;
+  line-height: 1.4;
+  color: var(--color-gold);
+}
+
+/* ------------------------------------------------------------
+   4. THE CARD AND ITS FLIP
+   .stage gives the 3D depth, .flipper is what actually turns,
+   and the two .card-side elements are the back and the face.
+   ------------------------------------------------------------ */
+.stage {
+  width: var(--card-w);
+  height: var(--card-h);
+  flex-shrink: 0;
+  perspective: 1400px;       /* how "deep" the 3D looks */
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.stage:disabled { cursor: default; }
+.stage:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 10px;
+  border-radius: 4px;
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 1s cubic-bezier(0.3, 0.7, 0.25, 1);
+}
+/* once a card is drawn, turn the whole thing over.
+   NOTE: the class goes ON .flipper itself, hence .flipper.is-revealed
+   (a space here would mean "a .flipper inside something" instead). */
+.flipper.is-revealed { transform: rotateY(180deg); }
+
+.card-side {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;      /* hide whichever side faces away */
+  -webkit-backface-visibility: hidden;
+  border: calc(var(--card-w) * 0.00625) solid var(--color-gold);
+  border-radius: calc(var(--card-w) * 0.0625);
+  background: linear-gradient(to bottom, #4a2b7a 0%, #311958 55%, #241043 100%);
+  box-shadow: 0 calc(var(--card-w) * 0.056) calc(var(--card-w) * 0.1375) 0 rgba(10, 3, 26, 0.65);
+  overflow: hidden;
+}
+.card-back-side { transform: rotateY(0deg); }
+.card-face-side { transform: rotateY(180deg); }
+
+/* A REVERSED card is the whole card turned upside down —
+   gradient included — exactly like frame 02 in Figma. */
+.flipper.is-reversed .card-face-side { transform: rotateY(180deg) rotate(180deg); }
+
+/* the two thin gold rules inside every card */
+.card-side::before,
+.card-side::after {
+  content: "";
+  position: absolute;
+  border: calc(var(--card-w) * 0.003125) solid var(--color-gold);
+  pointer-events: none;
+}
+.card-side::before {
+  inset: calc(var(--card-w) * 0.03125);
+  border-radius: calc(var(--card-w) * 0.045);
+  opacity: 0.55;
+}
+.card-side::after {
+  inset: calc(var(--card-w) * 0.0594);
+  border-radius: calc(var(--card-w) * 0.03);
+  border-color: var(--color-gold-deep);
+  opacity: 0.3;
+}
+
+/* the card back drawing fills its side */
+.card-back-art { position: absolute; inset: 0; color: var(--color-gold); }
+.card-back-art svg { width: 100%; height: 100%; display: block; }
+
+/* ---- the shared face template: rank on top, symbol in the
+        middle, name at the bottom ---- */
+.card-face-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--card-w) * 0.1) calc(var(--card-w) * 0.07) calc(var(--card-w) * 0.115);
+}
+.card-rank {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--card-w) * 0.0469);
+  letter-spacing: calc(var(--card-w) * 0.0227);
+  text-indent: calc(var(--card-w) * 0.0227);
+  line-height: 1.3;
+  color: var(--color-gold);
+  white-space: nowrap;
+}
+.card-art {
+  flex: 1;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+/* soft halo behind the symbol, like the Star's glow */
+.card-art::before {
+  content: "";
+  position: absolute;
+  width: calc(var(--card-w) * 0.78);
+  height: calc(var(--card-w) * 0.78);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,199,110,0.20) 0%, rgba(232,199,110,0) 70%);
+}
+.card-symbol {
+  position: relative;
+  width: calc(var(--card-w) * 0.56);
+  height: calc(var(--card-w) * 0.56);
+  color: var(--color-gold);
+}
+.card-symbol svg { width: 100%; height: 100%; display: block; }
+
+.card-divider {
+  width: calc(var(--card-w) * 0.2);
+  height: 1px;
+  background: var(--color-gold);
+  opacity: 0.55;
+  margin-bottom: calc(var(--card-w) * 0.034);
+}
+.card-face-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--card-w) * 0.0594);
+  letter-spacing: calc(var(--card-w) * 0.0152);
+  text-indent: calc(var(--card-w) * 0.0152);
+  line-height: 1.3;
+  color: var(--color-gold-bright);
+  text-align: center;
+  max-width: 100%;
+  word-spacing: calc(var(--card-w) * -0.008);   /* tightens long names */
+}
+
+/* ---- The Star keeps its original hand-made artwork.
+        Positions are percentages so it scales with the card. ---- */
+.star-art { position: absolute; inset: 0; pointer-events: none; }
+.star-art img { position: absolute; display: block; }
+.star-art .sa-glow   { left: 5.38%;  top: 21.32%; width: 87.98%; }
+.star-art .sa-ring   { left: 25.32%; top: 33.53%; width: 48.10%; }
+.star-art .sa-star   { left: 31.65%; top: 37.40%; width: 35.44%; }
+.star-art .sa-core   { left: 46.52%; top: 46.51%; width: 5.70%; }
+.star-art .sa-sp     { width: 3.48%; }
+.star-art .sa-sp1 { left: 19.62%; top: 28.29%; }
+.star-art .sa-sp2 { left: 75.95%; top: 35.27%; }
+.star-art .sa-sp3 { left: 24.05%; top: 64.73%; }
+.star-art .sa-sp4 { left: 74.05%; top: 67.44%; }
+.star-art .sa-sp5 { left: 48.73%; top: 20.54%; }
+
+/* ------------------------------------------------------------
+   5. THE READING BELOW THE CARD
+   ------------------------------------------------------------ */
+.reading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  width: 100%;
+  min-width: 0;        /* lets it shrink on narrow screens */
+}
+.card-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 27px;
+  line-height: 1.3;
+  letter-spacing: 3px;
+  text-indent: 3px;
+  color: var(--color-gold);
+}
+.keywords {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 1.5px;
+  text-indent: 1.5px;
+  color: var(--color-text-muted);
+}
+.meaning {
+  margin: 0;
+  /* max-width, NOT width: a fixed width here stops the page
+     shrinking properly on a phone. */
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 20px;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+/* ------------------------------------------------------------
+   6. THE BUTTON
+   ------------------------------------------------------------ */
+.draw-button {
+  flex-shrink: 0;
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 17px 44px;
+  border-radius: 100px;
+  background: var(--color-gold);
+  color: var(--color-bg-deep);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 2.5px;
+  text-indent: 2.5px;
+  box-shadow: 0 6px 11px 0 rgba(232, 199, 110, 0.3);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.draw-button:hover:not(:disabled) {
+  background: var(--color-gold-bright);
+  box-shadow: 0 8px 18px 0 rgba(232, 199, 110, 0.45);
+  transform: translateY(-1px);
+}
+.draw-button:active:not(:disabled) { transform: translateY(0); }
+.draw-button:focus-visible {
+  outline: 2px solid var(--color-gold-bright);
+  outline-offset: 4px;
+}
+/* dimmed and clearly not clickable — matches frames 02 and 03 */
+.draw-button:disabled {
+  opacity: 0.38;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ------------------------------------------------------------
+   7. SMALL SCREENS
+   One line shrinks the card; everything on it follows.
+   ------------------------------------------------------------ */
+@media (max-width: 760px) {
+  :root { --card-w: min(264px, 62vw); }
+  .page { padding: 36px 20px; gap: 18px; }
+  .title { font-size: 28px; letter-spacing: 5px; text-indent: 5px; }
+  .subtitle { font-size: 17px; }
+  .card-name { font-size: 23px; }
+  .keywords { font-size: 15px; }
+  .meaning { font-size: 18px; }
+  .draw-button { padding: 15px 34px; font-size: 14px; }
+}
+
+/* ------------------------------------------------------------
+   8. REDUCED MOTION
+   If the visitor has asked their system for less animation,
+   the card changes instantly instead of flipping.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .flipper { transition: none; }
+  .draw-button { transition: none; }
+}
+
+/* utility: hide something completely */
+[hidden] { display: none !important; }
