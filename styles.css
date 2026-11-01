@@ -19,10 +19,44 @@
   --font-display: 'Cinzel', 'Times New Roman', serif;
   --font-body:    'Cormorant Garamond', Georgia, serif;
 
-  /* The card's width. EVERYTHING on the card is measured from
-     this one number, so shrinking it on a phone keeps all the
-     proportions exactly right. 264px matches the Figma design. */
-  --card-w: 264px;
+  /* ---- Fluid sizing -------------------------------------------
+     Every size below reacts to BOTH the width and the height of
+     the screen, so the whole page fits without scrolling.
+
+     clamp(smallest, preferred, largest) picks the middle value
+     unless it falls outside the limits.
+
+     min(3.1vw, 5svh) means "3.1% of the screen's width, or 5% of
+     its height, whichever is SMALLER" — so a short screen shrinks
+     the type just as a narrow one does.
+
+     svh = "small viewport height": the height still visible when a
+     phone browser shows its address bar. Using it means the page
+     fits even before those bars slide away.
+     -------------------------------------------------------------- */
+  /* Text is driven by the screen's HEIGHT, because height is what
+     decides whether the page fits. The title also has a width cap,
+     since it is the longest line and would otherwise wrap awkwardly
+     on a narrow phone. */
+  --fs-title:    clamp(18px, min(7.2vw, 5.0svh), 42px);
+  --fs-subtitle: clamp(11px, 2.4svh, 19px);
+  --fs-note:     clamp(9px,  1.5svh, 12px);
+  --fs-name:     clamp(15px, 3.3svh, 27px);
+  --fs-keywords: clamp(9px,  1.9svh, 16px);
+  --fs-meaning:  clamp(11px, 2.4svh, 20px);
+  --fs-button:   clamp(10px, 1.8svh, 15px);
+
+  --gap:   clamp(4px, 2.0svh, 20px);
+  --pad-y: clamp(8px,  4.0svh, 48px);
+  --pad-x: clamp(14px, 5vw, 64px);
+
+  /* How much vertical room everything OTHER than the card needs. */
+  --reserve: clamp(210px, 52svh, 470px);
+
+  /* The card takes the smallest of three limits: its design size,
+     what the width allows, and what's left of the height. EVERYTHING
+     drawn on the card is measured from this, so it all scales together. */
+  --card-w: min(264px, 56vw, calc((100svh - var(--reserve)) / 1.625));
   --card-h: calc(var(--card-w) * 429 / 264);
 }
 
@@ -45,15 +79,22 @@ body {
    ------------------------------------------------------------ */
 .page {
   position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  padding: 48px 64px;
+  min-height: 100svh;
+  display: grid;
+  /* one column, four stacked rows */
+  grid-template-areas: "header" "card" "text" "button";
+  grid-template-rows: auto auto auto auto;
+  align-content: center;
+  justify-items: center;
+  gap: var(--gap);
+  padding: var(--pad-y) var(--pad-x);
   overflow: hidden;
 }
+.header      { grid-area: header; }
+.stage       { grid-area: card; }
+#prompt      { grid-area: text; }
+.reading     { grid-area: text; }
+.draw-button { grid-area: button; }
 
 /* faint stars scattered behind everything */
 .bg-star { position: absolute; pointer-events: none; }
@@ -65,7 +106,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: calc(var(--gap) * 0.5);
   text-align: center;
   max-width: 100%;
   min-width: 0;
@@ -74,17 +115,17 @@ body {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 42px;
+  font-size: var(--fs-title);
   line-height: 1.2;
-  letter-spacing: 8px;
-  text-indent: 8px;          /* nudges it back to true centre */
+  letter-spacing: calc(var(--fs-title) * 0.19);
+  text-indent: calc(var(--fs-title) * 0.19);   /* nudges it back to true centre */
   color: var(--color-gold-bright);
 }
 .subtitle {
   margin: 0;
   font-family: var(--font-body);
   font-style: italic;
-  font-size: 19px;
+  font-size: var(--fs-subtitle);
   line-height: 1.4;
   color: var(--color-text-muted);
 }
@@ -92,9 +133,9 @@ body {
 .today-note {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-indent: 3px;
+  font-size: var(--fs-note);
+  letter-spacing: calc(var(--fs-note) * 0.25);
+  text-indent: calc(var(--fs-note) * 0.25);
   line-height: 1.4;
   color: var(--color-gold);
 }
@@ -263,7 +304,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: calc(var(--gap) * 0.5);
   text-align: center;
   width: 100%;
   min-width: 0;        /* lets it shrink on narrow screens */
@@ -272,19 +313,19 @@ body {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 27px;
+  font-size: var(--fs-name);
   line-height: 1.3;
-  letter-spacing: 3px;
-  text-indent: 3px;
+  letter-spacing: calc(var(--fs-name) * 0.11);
+  text-indent: calc(var(--fs-name) * 0.11);
   color: var(--color-gold);
 }
 .keywords {
   margin: 0;
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: var(--fs-keywords);
   line-height: 1.4;
-  letter-spacing: 1.5px;
-  text-indent: 1.5px;
+  letter-spacing: calc(var(--fs-keywords) * 0.09);
+  text-indent: calc(var(--fs-keywords) * 0.09);
   color: var(--color-text-muted);
 }
 .meaning {
@@ -295,8 +336,8 @@ body {
   max-width: 560px;
   text-align: center;
   font-family: var(--font-body);
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: var(--fs-meaning);
+  line-height: 1.45;
   color: var(--color-text-primary);
 }
 
@@ -308,15 +349,15 @@ body {
   appearance: none;
   border: 0;
   cursor: pointer;
-  padding: 17px 44px;
+  padding: calc(var(--fs-button) * 1.13) calc(var(--fs-button) * 2.93);
   border-radius: 100px;
   background: var(--color-gold);
   color: var(--color-bg-deep);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 2.5px;
-  text-indent: 2.5px;
+  font-size: var(--fs-button);
+  letter-spacing: calc(var(--fs-button) * 0.17);
+  text-indent: calc(var(--fs-button) * 0.17);
   box-shadow: 0 6px 11px 0 rgba(232, 199, 110, 0.3);
   transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
@@ -342,15 +383,50 @@ body {
    7. SMALL SCREENS
    One line shrinks the card; everything on it follows.
    ------------------------------------------------------------ */
+/* Narrow screens: the meaning text should not stretch too wide. */
 @media (max-width: 760px) {
-  :root { --card-w: min(264px, 62vw); }
-  .page { padding: 36px 20px; gap: 18px; }
-  .title { font-size: 28px; letter-spacing: 5px; text-indent: 5px; }
-  .subtitle { font-size: 17px; }
-  .card-name { font-size: 23px; }
-  .keywords { font-size: 15px; }
-  .meaning { font-size: 18px; }
-  .draw-button { padding: 15px 34px; font-size: 14px; }
+  .meaning { max-width: 42ch; }
+}
+
+/* ------------------------------------------------------------
+   PHONES (portrait)
+   A narrow column wraps the meaning onto more lines, so the words
+   need more room and the card gets correspondingly less. Without
+   this the page would run off the bottom by 30-40px.
+   ------------------------------------------------------------ */
+@media (max-width: 520px) {
+  :root { --reserve: clamp(240px, 64svh, 470px); }
+  /* keep the title on one line where possible - wrapping costs ~35px */
+  :root { --fs-title: clamp(17px, min(5.6vw, 5.0svh), 42px); }
+}
+
+/* ------------------------------------------------------------
+   A PHONE TURNED SIDEWAYS
+   Very little height, plenty of width — so stand the card beside
+   the words instead of above them. Same elements, rearranged.
+   ------------------------------------------------------------ */
+@media (orientation: landscape) and (max-height: 560px) {
+  :root {
+    /* with the text alongside, the card can use nearly all the height */
+    --card-w: min(264px, 38vw, calc((100svh - 2 * var(--pad-y)) / 1.625));
+    --reserve: 0px;
+  }
+  .page {
+    grid-template-areas:
+      "card header"
+      "card text"
+      "card button";
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    column-gap: clamp(16px, 4vw, 44px);
+    row-gap: clamp(4px, 1.5svh, 14px);
+    justify-items: center;
+    /* the card is taller than the three text rows, which stretches
+       them; centring stops the button being pulled out of shape */
+    align-items: center;
+  }
+  .stage { align-self: center; }
+  .meaning { max-width: 48ch; }
 }
 
 /* ------------------------------------------------------------
